@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新生儿日常事项记录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #1976d2;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .baby-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .baby-name {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .calendar-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-width: 300px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .calendar-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #1976d2;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 5px;
+        }
+
+        .calendar-nav-btn {
+            padding: 3px 8px;
+            background-color: #e3f2fd;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .calendar-nav-btn:hover {
+            background-color: #bbdefb;
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .weekday {
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #666;
+            padding: 5px;
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-day {
+            text-align: center;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-day:hover {
+            background-color: #f5f5f5;
+        }
+
+        .calendar-day.today {
+            background-color: #bbdefb;
+            font-weight: bold;
+        }
+
+        .calendar-day.selected {
+            background-color: #1976d2;
+            color: white;
+            font-weight: bold;
+        }
+
+        .calendar-day.other-month {
+            color: #ccc;
+        }
+
+        #current-date {
+            font-size: 16px;
+            font-weight: bold;
+            min-width: 120px;
+            display: none;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            padding: 10px 15px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background-color: #1976d2;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="time"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: #1976d2;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1565c0;
+        }
+
+        .btn-secondary {
+            background-color: #757575;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #616161;
+        }
+
+        .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quick-btn {
+            padding: 8px 12px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .quick-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .history-section {
+            margin-top: 30px;
+        }
+
+        h3 {
+            color: #1976d2;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 10px;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .history-item-time {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .history-item-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .action-btn {
+            padding: 3px 8px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .action-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .dashboard {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .overview-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .card-feeding {
+            background-color: #e3f2fd;
+        }
+
+        .card-sleep {
+            background-color: #e8f5e8;
+        }
+
+        .card-health {
+            background-color: #fff3e0;
+        }
+
+        .card-growth {
+            background-color: #f3e5f5;
+        }
+
+        .card-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .card-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .chart-container {
+            margin-bottom: 30px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #1976d2;
+        }
+
+        .chart-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .chart-btn {
+            padding: 5px 10px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .chart-btn.active {
+            background-color: #1976d2;
+            color: white;
+        }
+
+        .chart {
+            height: 200px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .alerts-section {
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
+
+        .todo-section {
+            margin-bottom: 20px;
+        }
+
+        .todo-list {
+            list-style: none;
+        }
+
+        .todo-item {
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .todo-item.completed {
+            background-color: #e8f5e8;
+            text-decoration: line-through;
+            color: #666;
+        }
+
+        .todo-checkbox {
+            margin-right: 10px;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            flex: 1;
+            margin: 0 5px;
+        }
+
+        .nav-btn.active {
+            background-color: #1976d2;
+            color: white;
+        }
+
+        .data-management {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .data-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .data-btn {
+            padding: 10px 15px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .data-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .baby-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .calendar-container {
+                width: 100%;
+                min-width: unset;
+                margin-top: 10px;
+            }
+
+            .calendar-days {
+                gap: 3px;
+            }
+
+            .calendar-day {
+                padding: 6px;
+                font-size: 12px;
+                min-height: 35px;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .form-row .form-group {
+                min-width: 100%;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .overview-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .bottom-nav {
+                padding: 15px 10px;
+            }
+
+            .nav-btn {
+                padding: 12px 15px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 20px;
+                text-align: center;
+            }
+
+            .baby-info {
+                align-items: center;
+            }
+
+            .baby-name {
+                width: 100%;
+                text-align: center;
+            }
+
+            #baby-name-input {
+                width: 100%;
+                max-width: 300px;
+                margin-top: 5px;
+            }
+
+            .calendar-container {
+                width: 100%;
+                max-width: 320px;
+            }
+
+            .calendar-day {
+                padding: 5px;
+                font-size: 11px;
+                min-height: 30px;
+            }
+
+            .nav-tabs {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+
+            .overview-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-content {
+                padding: 15px;
+            }
+
+            .history-list {
+                max-height: 200px;
+            }
+
+            .quick-actions {
+                justify-content: center;
+            }
+
+            .quick-btn {
+                font-size: 11px;
+                padding: 6px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>新生儿日常事项记录</h1>
+            <div class="baby-info">
+                <div class="baby-name">
+                    <label for="baby-name-input">宝宝姓名：</label>
+                    <input type="text" id="baby-name-input" value="宝宝" placeholder="请输入宝宝姓名">
+                </div>
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <div class="calendar-title" id="calendar-title"></div>
+                        <div class="calendar-nav">
+                            <button class="calendar-nav-btn" onclick="changeMonth(-1)">&lt;</button>
+                            <button class="calendar-nav-btn" onclick="changeMonth(1)">&gt;</button>
+                        </div>
+                    </div>
+                    <div class="calendar-weekdays">
+                        <div class="weekday">日</div>
+                        <div class="weekday">一</div>
+                        <div class="weekday">二</div>
+                        <div class="weekday">三</div>
+                        <div class="weekday">四</div>
+                        <div class="weekday">五</div>
+                        <div class="weekday">六</div>
+                    </div>
+                    <div class="calendar-days" id="calendar-days"></div>
+                </div>
+            </div>
+        </header>
+
+        <div id="tracking-section">
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="switchTab('feeding')">喂养</button>
+                <button class="tab-btn" onclick="switchTab('care')">护理</button>
+                <button class="tab-btn" onclick="switchTab('health')">健康</button>
+                <button class="tab-btn" onclick="switchTab('growth')">成长</button>
+                <button class="tab-btn" onclick="switchTab('sleep')">睡眠</button>
+            </div>
+
+            <!-- 喂养记录 -->
+            <div class="tab-content active" id="feeding">
+                <h3>喂养记录</h3>
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="quickFeed('母乳', '亲喂', '左')">母乳亲喂-左</button>
+                    <button class="quick-btn" onclick="quickFeed('母乳', '亲喂', '右')">母乳亲喂-右</button>
+                    <button class="quick-btn" onclick="quickFeed('配方奶', '', '', 60)">配方奶60ml</button>
+                    <button class="quick-btn" onclick="quickFeed('配方奶', '', '', 90)">配方奶90ml</button>
+                </div>
+                <form id="feeding-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="feed-start-time">开始时间：</label>
+                            <input type="time" id="feed-start-time">
+                        </div>
+                        <div class="form-group">
+                            <label for="feed-end-time">结束时间：</label>
+                            <input type="time" id="feed-end-time">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="feed-method">喂养方式：</label>
+                            <select id="feed-method">
+                                <option value="母乳">母乳</option>
+                                <option value="配方奶">配方奶</option>
+                                <option value="混合喂养">混合喂养</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="feed-type">喂养类型：</label>
+                            <select id="feed-type">
+                                <option value="亲喂">亲喂</option>
+                                <option value="瓶喂">瓶喂</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="feed-amount">奶量 (ml)：</label>
+                            <input type="number" id="feed-amount" placeholder="请输入奶量">
+                        </div>
+                        <div class="form-group">
+                            <label for="feed-side">喂养侧：</label>
+                            <select id="feed-side">
+                                <option value="左">左</option>
+                                <option value="右">右</option>
+                                <option value="双侧">双侧</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="feed-burped">是否拍嗝：</label>
+                            <select id="feed-burped">
+                                <option value="是">是</option>
+                                <option value="否">否</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="feed-spit">是否吐奶：</label>
+                            <select id="feed-spit">
+                                <option value="否">否</option>
+                                <option value="少量">少量</option>
+                                <option value="中量">中量</option>
+                                <option value="大量">大量</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="feed-note">备注：</label>
+                        <textarea id="feed-note" rows="2" placeholder="请输入备注信息"></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" onclick="saveFeeding()">保存记录</button>
+                        <button type="reset" class="btn btn-secondary">重置</button>
+                    </div>
+                </form>
+                <div class="history-section">
+                    <h3>历史记录</h3>
+                    <div class="history-list" id="feeding-history"></div>
+                </div>
+            </div>
+
+            <!-- 护理记录 -->
+            <div class="tab-content" id="care">
+                <h3>护理记录</h3>
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="quickBath()">洗澡</button>
+                    <button class="quick-btn" onclick="quickDiaper()">更换纸尿裤</button>
+                    <button class="quick-btn" onclick="quickUmbilical()">脐带护理</button>
+                    <button class="quick-btn" onclick="quickTouch()">抚触/被动操</button>
+                </div>
+                <form id="care-form">
+                    <div class="form-group">
+                        <label for="care-type">护理类型：</label>
+                        <select id="care-type">
+                            <option value="洗澡">洗澡</option>
+                            <option value="臀部护理">臀部护理</option>
+                            <option value="脐带护理">脐带护理</option>
+                            <option value="抚触/被动操">抚触/被动操</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="care-time">时间：</label>
+                            <input type="time" id="care-time">
+                        </div>
+                        <div class="form-group">
+                            <label for="care-duration">时长 (分钟)：</label>
+                            <input type="number" id="care-duration" placeholder="请输入时长">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="bath-temperature">洗澡水温 (℃)：</label>
+                            <input type="number" id="bath-temperature" placeholder="请输入水温">
+                        </div>
+                        <div class="form-group">
+                            <label for="diaper-status">纸尿裤状态：</label>
+                            <select id="diaper-status">
+                                <option value="干">干</option>
+                                <option value="湿">湿</option>
+                                <option value="大便">大便</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="umbilical-method">护理方式：</label>
+                            <select id="umbilical-method">
+                                <option value="碘伏消毒">碘伏消毒</option>
+                                <option value="酒精消毒">酒精消毒</option>
+                                <option value="其他">其他</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="umbilical-status">脐带状态：</label>
+                            <select id="umbilical-status">
+                                <option value="干燥">干燥</option>
+                                <option value="渗血">渗血</option>
+                                <option value="渗液">渗液</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="care-note">备注：</label>
+                        <textarea id="care-note" rows="2" placeholder="请输入备注信息"></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" onclick="saveCare()">保存记录</button>
+                        <button type="reset" class="btn btn-secondary">重置</button>
+                    </div>
+                </form>
+                <div class="history-section">
+                    <h3>历史记录</h3>
+                    <div class="history-list" id="care-history"></div>
+                </div>
+            </div>
+
+            <!-- 健康记录 -->
+            <div class="tab-content" id="health">
+                <h3>健康记录</h3>
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="quickTemperature()">测量体温</button>
+                    <button class="quick-btn" onclick="quickPoop()">记录排便</button>
+                    <button class="quick-btn" onclick="quickPee()">记录排尿</button>
+                </div>
+                <form id="health-form">
+                    <div class="form-group">
+                        <label for="health-type">健康类型：</label>
+                        <select id="health-type">
+                            <option value="体温">体温</option>
+                            <option value="排便">排便</option>
+                            <option value="排尿">排尿</option>
+                            <option value="用药/就医">用药/就医</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="health-time">时间：</label>
+                            <input type="time" id="health-time">
+                        </div>
+                        <div class="form-group">
+                            <label for="temperature-value">体温 (℃)：</label>
+                            <input type="number" id="temperature-value" step="0.1" placeholder="请输入体温">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="poop-count">排便次数：</label>
+                            <input type="number" id="poop-count" placeholder="请输入次数">
+                        </div>
+                        <div class="form-group">
+                            <label for="poop-shape">排便性状：</label>
+                            <select id="poop-shape">
+                                <option value="稀水样">稀水样</option>
+                                <option value="糊状">糊状</option>
+                                <option value="条状">条状</option>
+                                <option value="奶瓣便">奶瓣便</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="poop-color">排便颜色：</label>
+                            <select id="poop-color">
+                                <option value="黄色">黄色</option>
+                                <option value="绿色">绿色</option>
+                                <option value="褐色">褐色</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="poop-amount">排便量：</label>
+                            <select id="poop-amount">
+                                <option value="少量">少量</option>
+                                <option value="中量">中量</option>
+                                <option value="大量">大量</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pee-count">排尿次数：</label>
+                            <input type="number" id="pee-count" placeholder="请输入次数">
+                        </div>
+                        <div class="form-group">
+                            <label for="pee-color">尿液颜色：</label>
+                            <select id="pee-color">
+                                <option value="无色">无色</option>
+                                <option value="淡黄色">淡黄色</option>
+                                <option value="深黄色">深黄色</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="medicine-reason">原因：</label>
+                        <input type="text" id="medicine-reason" placeholder="请输入原因">
+                    </div>
+                    <div class="form-group">
+                        <label for="medicine-name">用药名称/就医科室：</label>
+                        <input type="text" id="medicine-name" placeholder="请输入用药名称或就医科室">
+                    </div>
+                    <div class="form-group">
+                        <label for="health-note">备注：</label>
+                        <textarea id="health-note" rows="2" placeholder="请输入备注信息"></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" onclick="saveHealth()">保存记录</button>
+                        <button type="reset" class="btn btn-secondary">重置</button>
+                    </div>
+                </form>
+                <div class="history-section">
+                    <h3>历史记录</h3>
+                    <div class="history-list" id="health-history"></div>
+                </div>
+            </div>
+
+            <!-- 成长记录 -->
+            <div class="tab-content" id="growth">
+                <h3>成长记录</h3>
+                <form id="growth-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="growth-time">测量时间：</label>
+                            <input type="time" id="growth-time">
+                        </div>
+                        <div class="form-group">
+                            <label for="growth-scene">测量场景：</label>
+                            <select id="growth-scene">
+                                <option value="居家">居家</option>
+                                <option value="医院">医院</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="weight-value">体重 (g)：</label>
+                            <input type="number" id="weight-value" placeholder="请输入体重">
+                        </div>
+                        <div class="form-group">
+                            <label for="height-value">身长 (cm)：</label>
+                            <input type="number" id="height-value" step="0.1" placeholder="请输入身长">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="head-circumference">头围 (cm)：</label>
+                        <input type="number" id="head-circumference" step="0.1" placeholder="请输入头围">
+                    </div>
+                    <div class="form-group">
+                        <label for="growth-note">备注：</label>
+                        <textarea id="growth-note" rows="2" placeholder="请输入备注信息"></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" onclick="saveGrowth()">保存记录</button>
+                        <button type="reset" class="btn btn-secondary">重置</button>
+                    </div>
+                </form>
+                <div class="history-section">
+                    <h3>历史记录</h3>
+                    <div class="history-list" id="growth-history"></div>
+                </div>
+            </div>
+
+            <!-- 睡眠记录 -->
+            <div class="tab-content" id="sleep">
+                <h3>睡眠记录</h3>
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="quickSleep('安静入睡', '床睡')">安静入睡-床睡</button>
+                    <button class="quick-btn" onclick="quickSleep('易惊醒', '抱睡')">易惊醒-抱睡</button>
+                </div>
+                <form id="sleep-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="sleep-start-time">入睡时间：</label>
+                            <input type="time" id="sleep-start-time">
+                        </div>
+                        <div class="form-group">
+                            <label for="sleep-end-time">醒觉时间：</label>
+                            <input type="time" id="sleep-end-time">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="sleep-status">睡眠状态：</label>
+                            <select id="sleep-status">
+                                <option value="安静入睡">安静入睡</option>
+                                <option value="易惊醒">易惊醒</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="night-wake-count">夜醒次数：</label>
+                            <input type="number" id="night-wake-count" placeholder="请输入夜醒次数">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="sleep-environment">睡眠环境：</label>
+                        <select id="sleep-environment">
+                            <option value="床睡">床睡</option>
+                            <option value="抱睡">抱睡</option>
+                            <option value="奶睡">奶睡</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sleep-note">备注：</label>
+                        <textarea id="sleep-note" rows="2" placeholder="请输入备注信息"></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" onclick="saveSleep()">保存记录</button>
+                        <button type="reset" class="btn btn-secondary">重置</button>
+                    </div>
+                </form>
+                <div class="history-section">
+                    <h3>历史记录</h3>
+                    <div class="history-list" id="sleep-history"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据看板 -->
+        <div id="dashboard-section" style="display: none;">
+            <div class="dashboard">
+                <h3>数据概览</h3>
+                <div class="overview-cards">
+                    <div class="card card-feeding">
+                        <div class="card-title">今日喂养次数</div>
+                        <div class="card-value" id="today-feed-count">0</div>
+                    </div>
+                    <div class="card card-feeding">
+                        <div class="card-title">今日总奶量</div>
+                        <div class="card-value" id="today-milk-amount">0 ml</div>
+                    </div>
+                    <div class="card card-sleep">
+                        <div class="card-title">今日总睡眠</div>
+                        <div class="card-value" id="today-sleep-duration">0 小时</div>
+                    </div>
+                    <div class="card card-sleep">
+                        <div class="card-value" id="today-longest-sleep">最长睡眠 0 小时</div>
+                    </div>
+                    <div class="card card-health">
+                        <div class="card-title">今日排便次数</div>
+                        <div class="card-value" id="today-poop-count">0</div>
+                    </div>
+                    <div class="card card-health">
+                        <div class="card-title">今日排尿次数</div>
+                        <div class="card-value" id="today-pee-count">0</div>
+                    </div>
+                    <div class="card card-growth">
+                        <div class="card-title">最新体重</div>
+                        <div class="card-value" id="latest-weight">0 g</div>
+                    </div>
+                    <div class="card card-growth">
+                        <div class="card-title">最新体温</div>
+                        <div class="card-value" id="latest-temperature">0 ℃</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3>趋势分析</h3>
+                    <div class="chart-selector">
+                        <button class="chart-btn active" onclick="switchChart('growth')">成长趋势</button>
+                        <button class="chart-btn" onclick="switchChart('feeding')">喂养趋势</button>
+                        <button class="chart-btn" onclick="switchChart('sleep')">睡眠趋势</button>
+                    </div>
+                    <div class="chart" id="growth-chart">成长趋势图表</div>
+                    <div class="chart" id="feeding-chart" style="display: none;">喂养趋势图表</div>
+                    <div class="chart" id="sleep-chart" style="display: none;">睡眠趋势图表</div>
+                </div>
+
+                <div class="alerts-section">
+                    <h3>异常提醒</h3>
+                    <div id="alerts-container">
+                        <div class="alert alert-success">今日宝宝状态一切正常</div>
+                    </div>
+                </div>
+
+                <div class="todo-section">
+                    <h3>今日待办</h3>
+                    <ul class="todo-list" id="todo-list">
+                        <li class="todo-item">
+                            <input type="checkbox" class="todo-checkbox">
+                            <span>测量体重</span>
+                        </li>
+                        <li class="todo-item">
+                            <input type="checkbox" class="todo-checkbox">
+                            <span>脐带护理</span>
+                        </li>
+                        <li class="todo-item">
+                            <input type="checkbox" class="todo-checkbox">
+                            <span>洗澡</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="data-management">
+                <h3>数据管理</h3>
+                <div class="data-actions">
+                    <button class="data-btn" onclick="exportData()">导出数据</button>
+                    <button class="data-btn" onclick="importData()">导入数据</button>
+                    <button class="data-btn" onclick="clearData()">清空数据</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+            <button class="nav-btn active" onclick="switchSection('tracking')">日常记录</button>
+            <button class="nav-btn" onclick="switchSection('dashboard')">数据看板</button>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentDate = new Date();
+        let babyName = "宝宝";
+        let data = {
+            feeding: [],
+            care: [],
+            health: [],
+            growth: [],
+            sleep: []
+        };
+
+        // 初始化
+        function init() {
+            updateCurrentDate();
+            loadData();
+            updateHistory();
+            updateDashboard();
+            setCurrentTime();
+            generateCalendar();
+        }
+
+        // 更新当前日期
+        function updateCurrentDate() {
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            document.getElementById('current-date').textContent = currentDate.toLocaleDateString('zh-CN', options);
+        }
+
+        // 切换日期
+        function changeDate(days) {
+            currentDate.setDate(currentDate.getDate() + days);
+            updateCurrentDate();
+            updateHistory();
+            updateDashboard();
+            generateCalendar();
+        }
+
+        // 生成日历
+        function generateCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const today = new Date();
+            
+            // 更新日历标题
+            document.getElementById('calendar-title').textContent = `${year}年${month + 1}月`;
+            
+            // 获取当月第一天
+            const firstDay = new Date(year, month, 1);
+            // 获取当月最后一天
+            const lastDay = new Date(year, month + 1, 0);
+            // 获取当月第一天是星期几
+            const startDay = firstDay.getDay();
+            // 获取当月天数
+            const daysInMonth = lastDay.getDate();
+            
+            // 获取上个月最后一天
+            const prevLastDay = new Date(year, month, 0).getDate();
+            
+            // 清空日历
+            const calendarDays = document.getElementById('calendar-days');
+            calendarDays.innerHTML = '';
+            
+            // 添加上个月的日期
+            for (let i = startDay; i > 0; i--) {
+                const day = document.createElement('div');
+                day.className = 'calendar-day other-month';
+                day.textContent = prevLastDay - i + 1;
+                calendarDays.appendChild(day);
+            }
+            
+            // 添加当月的日期
+            for (let i = 1; i <= daysInMonth; i++) {
+                const day = document.createElement('div');
+                day.className = 'calendar-day';
+                
+                // 检查是否是今天
+                if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                    day.classList.add('today');
+                }
+                
+                // 检查是否是选中的日期
+                if (i === currentDate.getDate() && month === currentDate.getMonth() && year === currentDate.getFullYear()) {
+                    day.classList.add('selected');
+                }
+                
+                day.textContent = i;
+                day.onclick = function() {
+                    selectDate(year, month, i);
+                };
+                calendarDays.appendChild(day);
+            }
+            
+            // 添加下个月的日期
+            const remainingDays = 42 - (startDay + daysInMonth);
+            for (let i = 1; i <= remainingDays; i++) {
+                const day = document.createElement('div');
+                day.className = 'calendar-day other-month';
+                day.textContent = i;
+                calendarDays.appendChild(day);
+            }
+        }
+
+        // 选择日期
+        function selectDate(year, month, day) {
+            currentDate = new Date(year, month, day);
+            updateCurrentDate();
+            updateHistory();
+            updateDashboard();
+            generateCalendar();
+        }
+
+        // 切换月份
+        function changeMonth(months) {
+            currentDate.setMonth(currentDate.getMonth() + months);
+            generateCalendar();
+            updateHistory();
+            updateDashboard();
+        }
+
+        // 设置当前时间
+        function setCurrentTime() {
+            const now = new Date();
+            const timeString = now.toTimeString().substring(0, 5);
+            document.getElementById('feed-start-time').value = timeString;
+            document.getElementById('feed-end-time').value = timeString;
+            document.getElementById('care-time').value = timeString;
+            document.getElementById('health-time').value = timeString;
+            document.getElementById('growth-time').value = timeString;
+            document.getElementById('sleep-start-time').value = timeString;
+            document.getElementById('sleep-end-time').value = timeString;
+        }
+
+        // 切换标签页
+        function switchTab(tabId) {
+            // 隐藏所有标签内容
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // 显示选中的标签内容
+            document.getElementById(tabId).classList.add('active');
+
+            // 更新标签按钮状态
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            tabBtns.forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // 更新历史记录
+            updateHistory();
+        }
+
+        // 切换功能区
+        function switchSection(sectionId) {
+            if (sectionId === 'tracking') {
+                document.getElementById('tracking-section').style.display = 'block';
+                document.getElementById('dashboard-section').style.display = 'none';
+            } else {
+                document.getElementById('tracking-section').style.display = 'none';
+                document.getElementById('dashboard-section').style.display = 'block';
+                updateDashboard();
+            }
+
+            // 更新导航按钮状态
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+
+        // 切换图表
+        function switchChart(chartId) {
+            // 隐藏所有图表
+            document.getElementById('growth-chart').style.display = 'none';
+            document.getElementById('feeding-chart').style.display = 'none';
+            document.getElementById('sleep-chart').style.display = 'none';
+
+            // 显示选中的图表
+            document.getElementById(chartId + '-chart').style.display = 'flex';
+
+            // 更新图表按钮状态
+            const chartBtns = document.querySelectorAll('.chart-btn');
+            chartBtns.forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+
+        // 快速喂养
+        function quickFeed(method, type, side, amount = '') {
+            document.getElementById('feed-method').value = method;
+            document.getElementById('feed-type').value = type;
+            document.getElementById('feed-side').value = side;
+            document.getElementById('feed-amount').value = amount;
+            setCurrentTime();
+        }
+
+        // 快速护理
+        function quickBath() {
+            document.getElementById('care-type').value = '洗澡';
+            setCurrentTime();
+        }
+
+        function quickDiaper() {
+            document.getElementById('care-type').value = '臀部护理';
+            setCurrentTime();
+        }
+
+        function quickUmbilical() {
+            document.getElementById('care-type').value = '脐带护理';
+            setCurrentTime();
+        }
+
+        function quickTouch() {
+            document.getElementById('care-type').value = '抚触/被动操';
+            setCurrentTime();
+        }
+
+        // 快速健康记录
+        function quickTemperature() {
+            document.getElementById('health-type').value = '体温';
+            setCurrentTime();
+        }
+
+        function quickPoop() {
+            document.getElementById('health-type').value = '排便';
+            setCurrentTime();
+        }
+
+        function quickPee() {
+            document.getElementById('health-type').value = '排尿';
+            setCurrentTime();
+        }
+
+        // 快速睡眠记录
+        function quickSleep(status, environment) {
+            document.getElementById('sleep-status').value = status;
+            document.getElementById('sleep-environment').value = environment;
+            setCurrentTime();
+        }
+
+        // 保存喂养记录
+        function saveFeeding() {
+            const record = {
+                id: Date.now(),
+                date: currentDate.toISOString().split('T')[0],
+                startTime: document.getElementById('feed-start-time').value,
+                endTime: document.getElementById('feed-end-time').value,
+                method: document.getElementById('feed-method').value,
+                type: document.getElementById('feed-type').value,
+                amount: document.getElementById('feed-amount').value,
+                side: document.getElementById('feed-side').value,
+                burped: document.getElementById('feed-burped').value,
+                spit: document.getElementById('feed-spit').value,
+                note: document.getElementById('feed-note').value
+            };
+
+            data.feeding.push(record);
+            saveData();
+            updateHistory();
+            alert('记录保存成功！');
+            document.getElementById('feeding-form').reset();
+            setCurrentTime();
+        }
+
+        // 保存护理记录
+        function saveCare() {
+            const record = {
+                id: Date.now(),
+                date: currentDate.toISOString().split('T')[0],
+                type: document.getElementById('care-type').value,
+                time: document.getElementById('care-time').value,
+                duration: document.getElementById('care-duration').value,
+                temperature: document.getElementById('bath-temperature').value,
+                diaperStatus: document.getElementById('diaper-status').value,
+                umbilicalMethod: document.getElementById('umbilical-method').value,
+                umbilicalStatus: document.getElementById('umbilical-status').value,
+                note: document.getElementById('care-note').value
+            };
+
+            data.care.push(record);
+            saveData();
+            updateHistory();
+            alert('记录保存成功！');
+            document.getElementById('care-form').reset();
+            setCurrentTime();
+        }
+
+        // 保存健康记录
+        function saveHealth() {
+            const record = {
+                id: Date.now(),
+                date: currentDate.toISOString().split('T')[0],
+                type: document.getElementById('health-type').value,
+                time: document.getElementById('health-time').value,
+                temperature: document.getElementById('temperature-value').value,
+                poopCount: document.getElementById('poop-count').value,
+                poopShape: document.getElementById('poop-shape').value,
+                poopColor: document.getElementById('poop-color').value,
+                poopAmount: document.getElementById('poop-amount').value,
+                peeCount: document.getElementById('pee-count').value,
+                peeColor: document.getElementById('pee-color').value,
+                medicineReason: document.getElementById('medicine-reason').value,
+                medicineName: document.getElementById('medicine-name').value,
+                note: document.getElementById('health-note').value
+            };
+
+            data.health.push(record);
+            saveData();
+            updateHistory();
+            alert('记录保存成功！');
+            document.getElementById('health-form').reset();
+            setCurrentTime();
+        }
+
+        // 保存成长记录
+        function saveGrowth() {
+            const record = {
+                id: Date.now(),
+                date: currentDate.toISOString().split('T')[0],
+                time: document.getElementById('growth-time').value,
+                scene: document.getElementById('growth-scene').value,
+                weight: document.getElementById('weight-value').value,
+                height: document.getElementById('height-value').value,
+                headCircumference: document.getElementById('head-circumference').value,
+                note: document.getElementById('growth-note').value
+            };
+
+            data.growth.push(record);
+            saveData();
+            updateHistory();
+            alert('记录保存成功！');
+            document.getElementById('growth-form').reset();
+            setCurrentTime();
+        }
+
+        // 保存睡眠记录
+        function saveSleep() {
+            const record = {
+                id: Date.now(),
+                date: currentDate.toISOString().split('T')[0],
+                startTime: document.getElementById('sleep-start-time').value,
+                endTime: document.getElementById('sleep-end-time').value,
+                status: document.getElementById('sleep-status').value,
+                nightWakeCount: document.getElementById('night-wake-count').value,
+                environment: document.getElementById('sleep-environment').value,
+                note: document.getElementById('sleep-note').value
+            };
+
+            data.sleep.push(record);
+            saveData();
+            updateHistory();
+            alert('记录保存成功！');
+            document.getElementById('sleep-form').reset();
+            setCurrentTime();
+        }
+
+        // 更新历史记录
+        function updateHistory() {
+            const dateStr = currentDate.toISOString().split('T')[0];
+            
+            // 过滤当天记录
+            const todayFeeding = data.feeding.filter(item => item.date === dateStr);
+            const todayCare = data.care.filter(item => item.date === dateStr);
+            const todayHealth = data.health.filter(item => item.date === dateStr);
+            const todayGrowth = data.growth.filter(item => item.date === dateStr);
+            const todaySleep = data.sleep.filter(item => item.date === dateStr);
+
+            // 更新喂养历史
+            const feedingHistory = document.getElementById('feeding-history');
+            feedingHistory.innerHTML = '';
+            todayFeeding.forEach(record => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `
+                    <div class="history-item-header">
+                        <strong>${record.method} ${record.type}</strong>
+                        <span class="history-item-time">${record.startTime} - ${record.endTime}</span>
+                    </div>
+                    <div>奶量：${record.amount || 'N/A'} ml</div>
+                    <div>喂养侧：${record.side}</div>
+                    <div>拍嗝：${record.burped}，吐奶：${record.spit}</div>
+                    ${record.note ? `<div>备注：${record.note}</div>` : ''}
+                    <div class="history-item-actions">
+                        <button class="action-btn" onclick="editRecord('feeding', ${record.id})">编辑</button>
+                        <button class="action-btn" onclick="deleteRecord('feeding', ${record.id})">删除</button>
+                    </div>
+                `;
+                feedingHistory.appendChild(item);
+            });
+
+            // 更新护理历史
+            const careHistory = document.getElementById('care-history');
+            careHistory.innerHTML = '';
+            todayCare.forEach(record => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `
+                    <div class="history-item-header">
+                        <strong>${record.type}</strong>
+                        <span class="history-item-time">${record.time}</span>
+                    </div>
+                    ${record.duration ? `<div>时长：${record.duration} 分钟</div>` : ''}
+                    ${record.temperature ? `<div>水温：${record.temperature} ℃</div>` : ''}
+                    ${record.diaperStatus ? `<div>纸尿裤状态：${record.diaperStatus}</div>` : ''}
+                    ${record.umbilicalMethod ? `<div>护理方式：${record.umbilicalMethod}</div>` : ''}
+                    ${record.umbilicalStatus ? `<div>脐带状态：${record.umbilicalStatus}</div>` : ''}
+                    ${record.note ? `<div>备注：${record.note}</div>` : ''}
+                    <div class="history-item-actions">
+                        <button class="action-btn" onclick="editRecord('care', ${record.id})">编辑</button>
+                        <button class="action-btn" onclick="deleteRecord('care', ${record.id})">删除</button>
+                    </div>
+                `;
+                careHistory.appendChild(item);
+            });
+
+            // 更新健康历史
+            const healthHistory = document.getElementById('health-history');
+            healthHistory.innerHTML = '';
+            todayHealth.forEach(record => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `
+                    <div class="history-item-header">
+                        <strong>${record.type}</strong>
+                        <span class="history-item-time">${record.time}</span>
+                    </div>
+                    ${record.temperature ? `<div>体温：${record.temperature} ℃</div>` : ''}
+                    ${record.poopCount ? `<div>排便次数：${record.poopCount}</div>` : ''}
+                    ${record.poopShape ? `<div>排便性状：${record.poopShape}</div>` : ''}
+                    ${record.poopColor ? `<div>排便颜色：${record.poopColor}</div>` : ''}
+                    ${record.poopAmount ? `<div>排便量：${record.poopAmount}</div>` : ''}
+                    ${record.peeCount ? `<div>排尿次数：${record.peeCount}</div>` : ''}
+                    ${record.peeColor ? `<div>尿液颜色：${record.peeColor}</div>` : ''}
+                    ${record.medicineReason ? `<div>原因：${record.medicineReason}</div>` : ''}
+                    ${record.medicineName ? `<div>用药/科室：${record.medicineName}</div>` : ''}
+                    ${record.note ? `<div>备注：${record.note}</div>` : ''}
+                    <div class="history-item-actions">
+                        <button class="action-btn" onclick="editRecord('health', ${record.id})">编辑</button>
+                        <button class="action-btn" onclick="deleteRecord('health', ${record.id})">删除</button>
+                    </div>
+                `;
+                healthHistory.appendChild(item);
+            });
+
+            // 更新成长历史
+            const growthHistory = document.getElementById('growth-history');
+            growthHistory.innerHTML = '';
+            todayGrowth.forEach(record => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `
+                    <div class="history-item-header">
+                        <strong>成长记录</strong>
+                        <span class="history-item-time">${record.time}</span>
+                    </div>
+                    <div>测量场景：${record.scene}</div>
+                    <div>体重：${record.weight} g</div>
+                    <div>身长：${record.height} cm</div>
+                    ${record.headCircumference ? `<div>头围：${record.headCircumference} cm</div>` : ''}
+                    ${record.note ? `<div>备注：${record.note}</div>` : ''}
+                    <div class="history-item-actions">
+                        <button class="action-btn" onclick="editRecord('growth', ${record.id})">编辑</button>
+                        <button class="action-btn" onclick="deleteRecord('growth', ${record.id})">删除</button>
+                    </div>
+                `;
+                growthHistory.appendChild(item);
+            });
+
+            // 更新睡眠历史
+            const sleepHistory = document.getElementById('sleep-history');
+            sleepHistory.innerHTML = '';
+            todaySleep.forEach(record => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `
+                    <div class="history-item-header">
+                        <strong>睡眠记录</strong>
+                        <span class="history-item-time">${record.startTime} - ${record.endTime}</span>
+                    </div>
+                    <div>睡眠状态：${record.status}</div>
+                    <div>睡眠环境：${record.environment}</div>
+                    ${record.nightWakeCount ? `<div>夜醒次数：${record.nightWakeCount}</div>` : ''}
+                    ${record.note ? `<div>备注：${record.note}</div>` : ''}
+                    <div class="history-item-actions">
+                        <button class="action-btn" onclick="editRecord('sleep', ${record.id})">编辑</button>
+                        <button class="action-btn" onclick="deleteRecord('sleep', ${record.id})">删除</button>
+                    </div>
+                `;
+                sleepHistory.appendChild(item);
+            });
+        }
+
+        // 编辑记录
+        function editRecord(type, id) {
+            const record = data[type].find(item => item.id === id);
+            if (!record) return;
+
+            // 这里可以实现编辑功能，暂时跳过
+            alert('编辑功能开发中...');
+        }
+
+        // 删除记录
+        function deleteRecord(type, id) {
+            if (confirm('确定要删除这条记录吗？')) {
+                data[type] = data[type].filter(item => item.id !== id);
+                saveData();
+                updateHistory();
+                updateDashboard();
+                alert('记录删除成功！');
+            }
+        }
+
+        // 更新数据看板
+        function updateDashboard() {
+            const dateStr = currentDate.toISOString().split('T')[0];
+            
+            // 过滤当天记录
+            const todayFeeding = data.feeding.filter(item => item.date === dateStr);
+            const todayCare = data.care.filter(item => item.date === dateStr);
+            const todayHealth = data.health.filter(item => item.date === dateStr);
+            const todayGrowth = data.growth.filter(item => item.date === dateStr);
+            const todaySleep = data.sleep.filter(item => item.date === dateStr);
+
+            // 更新概览卡片
+            document.getElementById('today-feed-count').textContent = todayFeeding.length;
+            
+            const totalMilk = todayFeeding.reduce((sum, item) => {
+                return sum + (parseFloat(item.amount) || 0);
+            }, 0);
+            document.getElementById('today-milk-amount').textContent = totalMilk + ' ml';
+
+            let totalSleepHours = 0;
+            let longestSleep = 0;
+            todaySleep.forEach(item => {
+                if (item.startTime && item.endTime) {
+                    const start = new Date(`2000-01-01T${item.startTime}`);
+                    const end = new Date(`2000-01-01T${item.endTime}`);
+                    if (end < start) {
+                        end.setDate(end.getDate() + 1);
+                    }
+                    const duration = (end - start) / (1000 * 60 * 60);
+                    totalSleepHours += duration;
+                    if (duration > longestSleep) {
+                        longestSleep = duration;
+                    }
+                }
+            });
+            document.getElementById('today-sleep-duration').textContent = Math.round(totalSleepHours) + ' 小时';
+            document.getElementById('today-longest-sleep').textContent = '最长睡眠 ' + Math.round(longestSleep) + ' 小时';
+
+            const poopCount = todayHealth.filter(item => item.type === '排便').reduce((sum, item) => {
+                return sum + (parseInt(item.poopCount) || 0);
+            }, 0);
+            document.getElementById('today-poop-count').textContent = poopCount;
+
+            const peeCount = todayHealth.filter(item => item.type === '排尿').reduce((sum, item) => {
+                return sum + (parseInt(item.peeCount) || 0);
+            }, 0);
+            document.getElementById('today-pee-count').textContent = peeCount;
+
+            // 获取最新体重和体温
+            const allGrowth = [...data.growth].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const latestWeight = allGrowth.find(item => item.weight);
+            document.getElementById('latest-weight').textContent = latestWeight ? latestWeight.weight + ' g' : '0 g';
+
+            const allHealth = [...data.health].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const latestTemperature = allHealth.find(item => item.temperature);
+            document.getElementById('latest-temperature').textContent = latestTemperature ? latestTemperature.temperature + ' ℃' : '0 ℃';
+
+            // 更新异常提醒
+            const alertsContainer = document.getElementById('alerts-container');
+            alertsContainer.innerHTML = '';
+
+            let hasAlert = false;
+
+            // 体温异常
+            if (latestTemperature && parseFloat(latestTemperature.temperature) > 37.5) {
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-warning';
+                alert.textContent = `体温异常：最新体温 ${latestTemperature.temperature}℃，略高于正常范围`;
+                alertsContainer.appendChild(alert);
+                hasAlert = true;
+            }
+
+            // 排便异常
+            if (poopCount > 5) {
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-warning';
+                alert.textContent = `排便异常：今日排便 ${poopCount}次，建议关注`;
+                alertsContainer.appendChild(alert);
+                hasAlert = true;
+            }
+
+            // 奶量偏低
+            if (totalMilk < 300) {
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-warning';
+                alert.textContent = `奶量偏低：今日总奶量 ${totalMilk}ml，低于新生儿平均水平`;
+                alertsContainer.appendChild(alert);
+                hasAlert = true;
+            }
+
+            // 无异常
+            if (!hasAlert) {
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-success';
+                alert.textContent = '今日宝宝状态一切正常';
+                alertsContainer.appendChild(alert);
+            }
+        }
+
+        // 保存数据到本地存储
+        function saveData() {
+            localStorage.setItem('babyTrackerData', JSON.stringify(data));
+            localStorage.setItem('babyName', document.getElementById('baby-name-input').value);
+        }
+
+        // 从本地存储加载数据
+        function loadData() {
+            const savedData = localStorage.getItem('babyTrackerData');
+            if (savedData) {
+                data = JSON.parse(savedData);
+            }
+
+            const savedName = localStorage.getItem('babyName');
+            if (savedName) {
+                document.getElementById('baby-name-input').value = savedName;
+                babyName = savedName;
+            }
+        }
+
+        // 导出数据
+        function exportData() {
+            const exportData = {
+                babyName: document.getElementById('baby-name-input').value,
+                data: data
+            };
+
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `新生儿记录_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 导入数据
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        if (importedData.data) {
+                            data = importedData.data;
+                            if (importedData.babyName) {
+                                document.getElementById('baby-name-input').value = importedData.babyName;
+                                babyName = importedData.babyName;
+                            }
+                            saveData();
+                            updateHistory();
+                            updateDashboard();
+                            alert('数据导入成功！');
+                        } else {
+                            alert('无效的数据文件！');
+                        }
+                    } catch (error) {
+                        alert('数据文件解析失败！');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        // 清空数据
+        function clearData() {
+            if (confirm('确定要清空所有数据吗？此操作不可恢复！')) {
+                data = {
+                    feeding: [],
+                    care: [],
+                    health: [],
+                    growth: [],
+                    sleep: []
+                };
+                saveData();
+                updateHistory();
+                updateDashboard();
+                alert('数据清空成功！');
+            }
+        }
+
+        // 监听宝宝姓名变化
+        document.getElementById('baby-name-input').addEventListener('input', function() {
+            babyName = this.value;
+            saveData();
+        });
+
+        // 初始化应用
+        init();
+    </script>
+</body>
+</html>
