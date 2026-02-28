@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>打砖块游戏</title>
     <style>
         body {
@@ -14,19 +14,24 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: none; /* 防止触摸时的默认行为 */
         }
-        
+
         h1 {
-            margin: 20px 0;
-            font-size: 2.5em;
+            margin: 5px 0;
+            font-size: 1.3em;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
-        
+
         .game-container {
             position: relative;
-            width: 800px;
-            height: 600px;
+            width: 90vw;
+            height: calc(90vh - 40px); /* 减去标题高度 */
+            max-width: 800px;
+            max-height: 600px;
             background: rgba(0, 0, 0, 0.5);
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
@@ -34,39 +39,49 @@
         }
         
         #gameCanvas {
-            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: #0a0a1a;
         }
         
         .game-info {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
+            top: 5px;
+            left: 5px;
+            right: 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 10;
+            flex-wrap: wrap;
         }
-        
+
         .info-item {
             background: rgba(0, 0, 0, 0.7);
-            padding: 8px 12px;
+            padding: 4px 8px;
             border-radius: 5px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
+            margin: 2px;
         }
-        
+
         .coins {
             color: #ffd700;
         }
-        
+
         .level {
             color: #00ff00;
         }
-        
+
         .score {
             color: #00ffff;
+        }
+
+        .lives {
+            color: #ff69b4;
         }
         
         .game-over {
@@ -75,32 +90,34 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: rgba(0, 0, 0, 0.9);
-            padding: 30px;
+            padding: 20px;
             border-radius: 10px;
             text-align: center;
             z-index: 20;
             display: none;
+            max-width: 90%;
         }
         
         .game-over h2 {
-            margin: 0 0 20px 0;
+            margin: 0 0 15px 0;
             color: #ff0000;
+            font-size: 1.5em;
         }
         
         .game-over p {
-            margin: 10px 0;
+            margin: 8px 0;
         }
         
         .btn {
             background: linear-gradient(45deg, #00ff00, #00cc00);
             color: black;
             border: none;
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 8px 16px;
+            font-size: 14px;
             font-weight: bold;
             border-radius: 5px;
             cursor: pointer;
-            margin: 10px;
+            margin: 8px;
             transition: all 0.3s ease;
         }
         
@@ -115,34 +132,37 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: rgba(0, 0, 0, 0.9);
-            padding: 30px;
+            padding: 20px;
             border-radius: 10px;
             text-align: center;
             z-index: 20;
             display: none;
+            max-width: 90%;
         }
         
         .shop h2 {
-            margin: 0 0 20px 0;
+            margin: 0 0 15px 0;
             color: #00ff00;
+            font-size: 1.5em;
         }
         
         .shop-item {
             background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
+            padding: 10px;
             border-radius: 5px;
-            margin: 10px 0;
+            margin: 8px 0;
             text-align: left;
         }
         
         .shop-item h3 {
-            margin: 0 0 5px 0;
+            margin: 0 0 4px 0;
             color: #00ffff;
+            font-size: 1em;
         }
         
         .shop-item p {
-            margin: 0 0 10px 0;
-            font-size: 14px;
+            margin: 0 0 8px 0;
+            font-size: 12px;
         }
         
         .shop-item .price {
@@ -152,8 +172,50 @@
         
         .shop-item .btn {
             float: right;
+            padding: 4px 8px;
+            font-size: 12px;
         }
-        
+
+        .pause-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 20;
+            display: none;
+        }
+
+        .pause-screen h2 {
+            margin: 0 0 15px 0;
+            color: #ffff00;
+            font-size: 1.5em;
+        }
+
+        .notification {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 255, 0, 0.9);
+            color: black;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: bold;
+            z-index: 30;
+            display: none;
+            animation: fadeOut 2s forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
         .power-up {
             position: absolute;
             width: 30px;
@@ -201,6 +263,70 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1em;
+                margin: 3px 0;
+            }
+
+            .game-container {
+                width: 95vw;
+                height: calc(95vh - 30px);
+            }
+
+            .info-item {
+                font-size: 10px;
+                padding: 2px 4px;
+            }
+
+            .btn {
+                font-size: 10px;
+                padding: 4px 8px;
+                margin: 2px;
+            }
+
+            .game-over h2,
+            .shop h2,
+            .pause-screen h2 {
+                font-size: 1em;
+            }
+
+            .game-over p,
+            .pause-screen p {
+                font-size: 12px;
+            }
+
+            .shop-item {
+                padding: 8px;
+                margin: 5px 0;
+            }
+
+            .shop-item h3 {
+                font-size: 0.85em;
+            }
+
+            .shop-item p {
+                font-size: 10px;
+            }
+        }
+
+        @media (max-height: 600px) {
+            h1 {
+                font-size: 1em;
+                margin: 2px 0;
+            }
+
+            .game-container {
+                height: calc(95vh - 25px);
+            }
+
+            .info-item {
+                font-size: 10px;
+                padding: 2px 4px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -208,13 +334,15 @@
     
     <div class="game-container">
         <div class="game-info">
+            <div class="info-item lives">❤️ 生命: <span id="lives">3</span></div>
             <div class="info-item coins">💰 金币: <span id="coins">0</span></div>
             <div class="info-item level">🏆 等级: <span id="level">1</span></div>
             <div class="info-item score">🎮 分数: <span id="score">0</span></div>
+            <button class="btn" onclick="togglePause()">暂停</button>
             <button class="btn" onclick="openShop()">商店</button>
         </div>
         
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <canvas id="gameCanvas"></canvas>
         
         <div class="game-over" id="gameOver">
             <h2>游戏结束</h2>
@@ -226,25 +354,33 @@
         <div class="shop" id="shop">
             <h2>商店</h2>
             <div class="shop-item">
-                <h3> paddle 长度 +20%</h3>
+                <h3>🎯 Paddle 长度 +20%</h3>
                 <p>增加 paddle 的长度，更容易接住球</p>
                 <span class="price">💰 50</span>
                 <button class="btn" onclick="buyUpgrade('paddleSize')">购买</button>
             </div>
             <div class="shop-item">
-                <h3> 球速 +10%</h3>
+                <h3>⚡ 球速 +10%</h3>
                 <p>增加球的速度，更快清除砖块</p>
                 <span class="price">💰 75</span>
                 <button class="btn" onclick="buyUpgrade('ballSpeed')">购买</button>
             </div>
             <div class="shop-item">
-                <h3> 多球模式</h3>
+                <h3>🎱 多球模式</h3>
                 <p>同时发射多个球</p>
                 <span class="price">💰 150</span>
                 <button class="btn" onclick="buyUpgrade('multiBall')">购买</button>
             </div>
             <button class="btn" onclick="closeShop()">关闭</button>
         </div>
+
+        <div class="pause-screen" id="pauseScreen">
+            <h2>游戏已暂停</h2>
+            <p>按暂停按钮或空格键继续</p>
+            <button class="btn" onclick="togglePause()">继续游戏</button>
+        </div>
+
+        <div class="notification" id="notification"></div>
     </div>
     
     <script>
@@ -252,6 +388,8 @@
         const gameState = {
             canvas: null,
             ctx: null,
+            canvasWidth: 800,
+            canvasHeight: 600,
             paddle: {
                 x: 350,
                 y: 550,
@@ -278,6 +416,7 @@
             level: 1,
             lives: 3,
             gameOver: false,
+            paused: false,
             shopOpen: false,
             upgrades: {
                 paddleSize: 1,
@@ -293,6 +432,10 @@
             gameState.canvas = document.getElementById('gameCanvas');
             gameState.ctx = gameState.canvas.getContext('2d');
             
+            // 设置canvas尺寸
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
             // 初始化砖块
             createBricks();
             
@@ -303,18 +446,45 @@
             // 监听鼠标事件
             gameState.canvas.addEventListener('mousemove', handleMouseMove);
             
+            // 监听触摸事件
+            gameState.canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+            gameState.canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+            gameState.canvas.addEventListener('touchend', handleTouchEnd);
+            
             // 开始游戏循环
             gameLoop();
+        }
+        
+        // 调整canvas尺寸
+        function resizeCanvas() {
+            const container = gameState.canvas.parentElement;
+            gameState.canvasWidth = container.clientWidth;
+            gameState.canvasHeight = container.clientHeight;
+            gameState.canvas.width = gameState.canvasWidth;
+            gameState.canvas.height = gameState.canvasHeight;
+            
+            // 调整paddle位置
+            gameState.paddle.y = gameState.canvasHeight - 30;
+            gameState.paddle.x = (gameState.canvasWidth - gameState.paddle.width) / 2;
+            
+            // 调整球的位置
+            gameState.balls.forEach(ball => {
+                ball.x = gameState.canvasWidth / 2;
+                ball.y = gameState.paddle.y - 10;
+            });
+            
+            // 重新创建砖块
+            createBricks();
         }
         
         // 创建砖块
         function createBricks() {
             gameState.bricks = [];
-            const brickWidth = (gameState.canvas.width - 100) / gameState.brickCols;
-            const brickHeight = 30;
-            const brickPadding = 10;
-            const brickOffsetTop = 80;
-            const brickOffsetLeft = 50;
+            const brickWidth = (gameState.canvasWidth - 40) / gameState.brickCols;
+            const brickHeight = 20;
+            const brickPadding = 8;
+            const brickOffsetTop = 60;
+            const brickOffsetLeft = 20;
             
             for (let r = 0; r < gameState.brickRows; r++) {
                 for (let c = 0; c < gameState.brickCols; c++) {
@@ -342,8 +512,13 @@
                 gameState.paddle.movingRight = true;
             } else if (e.key === 'Left' || e.key === 'ArrowLeft') {
                 gameState.paddle.movingLeft = true;
-            } else if (e.key === ' ' && gameState.gameOver) {
-                restartGame();
+            } else if (e.key === ' ') {
+                e.preventDefault();
+                if (gameState.gameOver) {
+                    restartGame();
+                } else {
+                    togglePause();
+                }
             }
         }
         
@@ -358,21 +533,49 @@
         
         // 处理鼠标移动
         function handleMouseMove(e) {
-            const relativeX = e.clientX - gameState.canvas.offsetLeft;
-            if (relativeX > 0 && relativeX < gameState.canvas.width) {
+            const rect = gameState.canvas.getBoundingClientRect();
+            const relativeX = e.clientX - rect.left;
+            if (relativeX > 0 && relativeX < gameState.canvasWidth) {
+                gameState.paddle.x = relativeX - (gameState.paddle.width * gameState.upgrades.paddleSize) / 2;
+            }
+        }
+        
+        // 处理触摸开始
+        function handleTouchStart(e) {
+            e.preventDefault();
+            handleTouch(e);
+        }
+        
+        // 处理触摸移动
+        function handleTouchMove(e) {
+            e.preventDefault();
+            handleTouch(e);
+        }
+        
+        // 处理触摸结束
+        function handleTouchEnd(e) {
+            e.preventDefault();
+        }
+        
+        // 处理触摸事件
+        function handleTouch(e) {
+            const rect = gameState.canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const relativeX = touch.clientX - rect.left;
+            if (relativeX > 0 && relativeX < gameState.canvasWidth) {
                 gameState.paddle.x = relativeX - (gameState.paddle.width * gameState.upgrades.paddleSize) / 2;
             }
         }
         
         // 游戏循环
         function gameLoop() {
-            if (gameState.gameOver || gameState.shopOpen) {
+            if (gameState.gameOver || gameState.shopOpen || gameState.paused) {
                 requestAnimationFrame(gameLoop);
                 return;
             }
             
             // 清空画布
-            gameState.ctx.clearRect(0, 0, gameState.canvas.width, gameState.canvas.height);
+            gameState.ctx.clearRect(0, 0, gameState.canvasWidth, gameState.canvasHeight);
             
             // 绘制所有元素
             drawPaddle();
@@ -442,7 +645,7 @@
                 gameState.ctx.font = '12px Arial';
                 gameState.ctx.textAlign = 'center';
                 gameState.ctx.textBaseline = 'middle';
-                gameState.ctx.fillText(powerUp.type, powerUp.x, powerUp.y);
+                gameState.ctx.fillText(powerUp.displayText, powerUp.x, powerUp.y);
                 gameState.ctx.closePath();
             });
         }
@@ -460,10 +663,18 @@
         
         // 更新 paddle
         function updatePaddle() {
-            if (gameState.paddle.movingRight && gameState.paddle.x < gameState.canvas.width - (gameState.paddle.width * gameState.upgrades.paddleSize)) {
+            const paddleWidth = gameState.paddle.width * gameState.upgrades.paddleSize;
+            if (gameState.paddle.movingRight && gameState.paddle.x < gameState.canvasWidth - paddleWidth) {
                 gameState.paddle.x += gameState.paddle.speed;
             } else if (gameState.paddle.movingLeft && gameState.paddle.x > 0) {
                 gameState.paddle.x -= gameState.paddle.speed;
+            }
+            // 确保paddle不会超出边界
+            if (gameState.paddle.x < 0) {
+                gameState.paddle.x = 0;
+            }
+            if (gameState.paddle.x > gameState.canvasWidth - paddleWidth) {
+                gameState.paddle.x = gameState.canvasWidth - paddleWidth;
             }
         }
         
@@ -471,7 +682,7 @@
         function updateBalls() {
             gameState.balls.forEach((ball, index) => {
                 // 碰撞检测 - 左右墙壁
-                if (ball.x + ball.dx > gameState.canvas.width - ball.radius || ball.x + ball.dx < ball.radius) {
+                if (ball.x + ball.dx > gameState.canvasWidth - ball.radius || ball.x + ball.dx < ball.radius) {
                     ball.dx = -ball.dx;
                 }
                 
@@ -496,22 +707,42 @@
                 // 碰撞检测 - 砖块
                 gameState.bricks.forEach(brick => {
                     if (brick.status === 1) {
-                        if (ball.x > brick.x && 
-                            ball.x < brick.x + brick.width && 
-                            ball.y > brick.y && 
-                            ball.y < brick.y + brick.height) {
-                            ball.dy = -ball.dy;
+                        // 改进的碰撞检测
+                        const ballLeft = ball.x - ball.radius;
+                        const ballRight = ball.x + ball.radius;
+                        const ballTop = ball.y - ball.radius;
+                        const ballBottom = ball.y + ball.radius;
+
+                        if (ballRight > brick.x &&
+                            ballLeft < brick.x + brick.width &&
+                            ballBottom > brick.y &&
+                            ballTop < brick.y + brick.height) {
+
+                            // 确定碰撞方向
+                            const overlapLeft = ballRight - brick.x;
+                            const overlapRight = (brick.x + brick.width) - ballLeft;
+                            const overlapTop = ballBottom - brick.y;
+                            const overlapBottom = (brick.y + brick.height) - ballTop;
+
+                            const minOverlap = Math.min(overlapLeft, overlapRight, overlapTop, overlapBottom);
+
+                            if (minOverlap === overlapTop || minOverlap === overlapBottom) {
+                                ball.dy = -ball.dy;
+                            } else {
+                                ball.dx = -ball.dx;
+                            }
+
                             brick.status = 0;
                             gameState.score += 10;
                             updateScore();
-                            
+
                             // 随机生成 power-up
                             if (Math.random() > 0.8) {
                                 createPowerUp(brick.x + brick.width / 2, brick.y + brick.height / 2);
                             }
-                            
-                            // 随机生成金币
-                            if (Math.random() > 0.6) {
+
+                            // 随机生成金币 - 概率提升5倍（从40%提升到92%）
+                            if (Math.random() > 0.08) {
                                 createCoin(brick.x + brick.width / 2, brick.y + brick.height / 2);
                             }
                         }
@@ -519,13 +750,15 @@
                 });
                 
                 // 球出界
-                if (ball.y + ball.dy > gameState.canvas.height - ball.radius) {
+                if (ball.y + ball.dy > gameState.canvasHeight - ball.radius) {
                     gameState.balls.splice(index, 1);
                     if (gameState.balls.length === 0) {
                         gameState.lives--;
+                        updateLives();
                         if (gameState.lives <= 0) {
                             endGame();
                         } else {
+                            showNotification('失去一条生命!');
                             resetBall();
                         }
                     }
@@ -552,7 +785,7 @@
                 }
                 
                 // 出界
-                if (powerUp.y > gameState.canvas.height) {
+                if (powerUp.y > gameState.canvasHeight) {
                     gameState.powerUps.splice(index, 1);
                 }
             });
@@ -574,7 +807,7 @@
                 }
                 
                 // 出界
-                if (coin.y > gameState.canvas.height) {
+                if (coin.y > gameState.canvasHeight) {
                     gameState.coins.splice(index, 1);
                 }
             });
@@ -663,6 +896,7 @@
                 createBricks();
                 resetBall();
                 updateLevel();
+                showNotification(`恭喜!进入第 ${gameState.level} 关!`);
             }
         }
         
@@ -693,6 +927,7 @@
             gameState.level = 1;
             gameState.lives = 3;
             gameState.gameOver = false;
+            gameState.paused = false;
             gameState.brickRows = 5;
             gameState.brickCols = 10;
             gameState.upgrades = {
@@ -700,14 +935,15 @@
                 ballSpeed: 1,
                 multiBall: 1
             };
-            
+
             updateScore();
             updateCoinsDisplay();
             updateLevel();
-            
+            updateLives();
+
             createBricks();
             resetBall();
-            
+
             document.getElementById('gameOver').style.display = 'none';
         }
         
@@ -725,19 +961,29 @@
         
         // 购买升级
         function buyUpgrade(type) {
-            let price;
+            let price, success = false, message = '';
             switch (type) {
                 case 'paddleSize':
                     price = 50;
-                    if (gameState.coinsCollected >= price && gameState.upgrades.paddleSize < 1.5) {
+                    if (gameState.upgrades.paddleSize >= 1.5) {
+                        message = 'Paddle 长度已达到最大!';
+                    } else if (gameState.coinsCollected < price) {
+                        message = `金币不足! 需要 ${price} 金币`;
+                    } else {
                         gameState.coinsCollected -= price;
                         gameState.upgrades.paddleSize += 0.2;
                         updateCoinsDisplay();
+                        success = true;
+                        message = 'Paddle 长度已升级!';
                     }
                     break;
                 case 'ballSpeed':
                     price = 75;
-                    if (gameState.coinsCollected >= price && gameState.upgrades.ballSpeed < 1.5) {
+                    if (gameState.upgrades.ballSpeed >= 1.5) {
+                        message = '球速已达到最大!';
+                    } else if (gameState.coinsCollected < price) {
+                        message = `金币不足! 需要 ${price} 金币`;
+                    } else {
                         gameState.coinsCollected -= price;
                         gameState.upgrades.ballSpeed += 0.2;
                         gameState.balls.forEach(ball => {
@@ -745,11 +991,17 @@
                             ball.dy *= 1.2;
                         });
                         updateCoinsDisplay();
+                        success = true;
+                        message = '球速已升级!';
                     }
                     break;
                 case 'multiBall':
                     price = 150;
-                    if (gameState.coinsCollected >= price && gameState.upgrades.multiBall < 3) {
+                    if (gameState.upgrades.multiBall >= 3) {
+                        message = '多球模式已达到最大!';
+                    } else if (gameState.coinsCollected < price) {
+                        message = `金币不足! 需要 ${price} 金币`;
+                    } else {
                         gameState.coinsCollected -= price;
                         gameState.upgrades.multiBall++;
                         // 添加额外的球
@@ -764,9 +1016,12 @@
                             });
                         }
                         updateCoinsDisplay();
+                        success = true;
+                        message = '多球模式已升级!';
                     }
                     break;
             }
+            showNotification(message, success);
         }
         
         // 更新分数显示
@@ -783,7 +1038,43 @@
         function updateLevel() {
             document.getElementById('level').textContent = gameState.level;
         }
-        
+
+        // 更新生命值显示
+        function updateLives() {
+            document.getElementById('lives').textContent = gameState.lives;
+        }
+
+        // 切换暂停状态
+        function togglePause() {
+            if (gameState.gameOver) return;
+            gameState.paused = !gameState.paused;
+            if (gameState.paused) {
+                document.getElementById('pauseScreen').style.display = 'block';
+            } else {
+                document.getElementById('pauseScreen').style.display = 'none';
+            }
+        }
+
+        // 显示通知
+        function showNotification(message, isSuccess = true) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.background = isSuccess ? 'rgba(0, 255, 0, 0.9)' : 'rgba(255, 0, 0, 0.9)';
+            notification.style.color = isSuccess ? 'black' : 'white';
+            notification.style.display = 'block';
+
+            // 重置动画
+            notification.style.animation = 'none';
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 2s forwards';
+            }, 10);
+
+            // 2秒后隐藏
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 2000);
+        }
+
         // 初始化游戏
         window.onload = initGame;
     </script>
